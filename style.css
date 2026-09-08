@@ -987,3 +987,21 @@ body.dark-mode .empty-message p {
         text-align: center;
     }
    }
+.dark-btn {
+    display: inline-block;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    padding: 11px 18px;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.18);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+}
+
+.dark-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
