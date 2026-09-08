@@ -1005,3 +1005,22 @@ body.dark-mode .empty-message p {
     background: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
 }
+/* =========================================
+   MARKS CHART
+========================================= */
+
+.chart-card {
+    overflow: hidden;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    margin-top: 20px;
+}
+
+#marksChart {
+    width: 100% !important;
+    height: 100% !important;
+}
