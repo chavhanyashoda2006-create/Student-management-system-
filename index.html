@@ -14,15 +14,26 @@
 
     <!-- Header -->
     <header class="header">
+
         <div class="header-content">
-            <h1>Student Management System</h1>
-            <p>Manage student records easily and efficiently</p>
+
+            <div>
+                <h1>Student Management System</h1>
+                <p>Manage student records easily and efficiently</p>
+            </div>
+
+            <button class="dark-btn" onclick="toggleDarkMode()">
+                🌙 Dark Mode
+            </button>
+
         </div>
+
     </header>
 
 
     <!-- Main Container -->
     <main class="container">
+
 
         <!-- Statistics -->
         <section class="stats">
@@ -32,51 +43,86 @@
                 <p id="totalStudents">0</p>
             </div>
 
+
             <div class="stat-card">
                 <h3>Average Marks</h3>
                 <p id="averageMarks">0</p>
             </div>
+
 
             <div class="stat-card">
                 <h3>Highest Marks</h3>
                 <p id="highestMarks">0</p>
             </div>
 
+
+            <div class="stat-card">
+                <h3>Lowest Marks</h3>
+                <p id="lowestMarks">0</p>
+            </div>
+
+
+            <div class="stat-card">
+                <h3>Passed Students</h3>
+                <p id="passStudents">0</p>
+            </div>
+
         </section>
+
 
 
         <!-- Add Student -->
         <section class="card">
 
             <div class="card-header">
+
                 <h2>Add Student</h2>
-                <p>Enter student details below</p>
+
+                <p>
+                    Enter student details below
+                </p>
+
             </div>
+
 
             <form id="studentForm">
 
                 <div class="form-group">
-                    <label for="name">Student Name</label>
+
+                    <label for="name">
+                        Student Name
+                    </label>
+
                     <input
                         type="text"
                         id="name"
                         placeholder="Enter student name"
                         required>
+
                 </div>
 
 
                 <div class="form-group">
-                    <label for="course">Course</label>
+
+                    <label for="course">
+                        Course
+                    </label>
+
                     <input
                         type="text"
                         id="course"
                         placeholder="e.g. BCA"
                         required>
+
                 </div>
 
 
                 <div class="form-group">
-                    <label for="marks">Marks</label>
+
+                    <label for="marks">
+                        Marks
+                    </label>
+
                     <input
                         type="number"
                         id="marks"
@@ -84,11 +130,16 @@
                         min="0"
                         max="100"
                         required>
+
                 </div>
 
 
-                <button type="submit" class="btn">
+                <button
+                    type="submit"
+                    class="btn">
+
                     + Add Student
+
                 </button>
 
             </form>
@@ -96,22 +147,75 @@
         </section>
 
 
+
         <!-- Student Records -->
         <section class="card">
+
 
             <div class="records-header">
 
                 <div>
-                    <h2>Student Records</h2>
-                    <p>View and manage student information</p>
+
+                    <h2>
+                        Student Records
+                    </h2>
+
+                    <p>
+                        View and manage student information
+                    </p>
+
                 </div>
 
+
+                <!-- Search -->
                 <input
                     type="text"
                     id="search"
+                    class="search-box"
                     placeholder="🔍 Search student...">
 
             </div>
+
+
+
+            <!-- Filters -->
+            <div class="filters">
+
+                <select id="courseFilter">
+
+                    <option value="all">
+                        All Courses
+                    </option>
+
+                    <option value="BCA">
+                        BCA
+                    </option>
+
+                    <option value="BBA">
+                        BBA
+                    </option>
+
+                    <option value="BCS">
+                        BCS
+                    </option>
+
+                    <option value="MCA">
+                        MCA
+                    </option>
+
+                </select>
+
+
+                <button
+                    class="export-btn"
+                    onclick="exportCSV()">
+
+                    📥 Export CSV
+
+                </button>
+
+            </div>
+
 
 
             <!-- Table -->
@@ -120,18 +224,35 @@
                 <table>
 
                     <thead>
+
                         <tr>
+
                             <th>#</th>
-                            <th>Student Name</th>
-                            <th>Course</th>
-                            <th>Marks</th>
-                            <th>Action</th>
+
+                            <th>
+                                Student Name
+                            </th>
+
+                            <th>
+                                Course
+                            </th>
+
+                            <th>
+                                Marks
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
                         </tr>
+
                     </thead>
+
 
                     <tbody id="studentList">
 
-                        <!-- Student records will appear here -->
+                        <!-- Students appear here -->
 
                     </tbody>
 
@@ -140,20 +261,56 @@
             </div>
 
 
-            <!-- Empty Message -->
-            <div id="emptyMessage" class="empty-message">
 
-                <h3>No students found</h3>
+            <!-- Empty Message -->
+            <div
+                id="emptyMessage"
+                class="empty-message">
+
+                <h3>
+                    No students found
+                </h3>
 
                 <p>
-                    Add your first student using the form above.
+                    Add your first student using the
+                    form above.
                 </p>
 
             </div>
 
         </section>
 
+
+
+        <!-- Marks Analysis -->
+        <section class="card">
+
+            <div class="card-header">
+
+                <h2>
+                    📊 Marks Analysis
+                </h2>
+
+                <p>
+                    Student performance overview
+                </p>
+
+            </div>
+
+
+            <div
+                id="chartContainer"
+                class="chart-container">
+
+                <canvas id="marksChart"></canvas>
+
+            </div>
+
+        </section>
+
+
     </main>
+
 
 
     <!-- Footer -->
@@ -164,6 +321,7 @@
         </p>
 
     </footer>
+
 
 
     <!-- JavaScript -->
