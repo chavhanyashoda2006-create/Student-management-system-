@@ -1,16 +1,17 @@
-// ===============================
+// =========================================
 // STUDENT MANAGEMENT SYSTEM
-// ===============================
+// =========================================
 
-// Load students from LocalStorage
+// Load saved students
 let students = JSON.parse(localStorage.getItem("students")) || [];
 
 let editIndex = -1;
+let marksChart = null;
 
 
-// ===============================
-// GET HTML ELEMENTS
-// ===============================
+// =========================================
+// HTML ELEMENTS
+// =========================================
 
 const form = document.getElementById("studentForm");
 const nameInput = document.getElementById("name");
@@ -21,9 +22,9 @@ const studentList = document.getElementById("studentList");
 const searchInput = document.getElementById("search");
 
 
-// ===============================
+// =========================================
 // SAVE STUDENTS
-// ===============================
+// =========================================
 
 function saveStudents() {
 
@@ -35,9 +36,9 @@ function saveStudents() {
 }
 
 
-// ===============================
+// =========================================
 // ADD / UPDATE STUDENT
-// ===============================
+// =========================================
 
 form.addEventListener("submit", function(event) {
 
@@ -47,19 +48,19 @@ form.addEventListener("submit", function(event) {
     const course = courseInput.value.trim();
     const marks = Number(marksInput.value);
 
-
-    // Validation
     if (
         name === "" ||
         course === "" ||
         marksInput.value === ""
     ) {
 
-        showMessage("Please fill all fields.", "error");
+        showMessage(
+            "Please fill all fields.",
+            "error"
+        );
+
         return;
-
     }
-
 
     if (marks < 0 || marks > 100) {
 
@@ -69,7 +70,6 @@ form.addEventListener("submit", function(event) {
         );
 
         return;
-
     }
 
 
@@ -80,7 +80,6 @@ form.addEventListener("submit", function(event) {
     };
 
 
-    // ADD
     if (editIndex === -1) {
 
         students.push(student);
@@ -90,20 +89,19 @@ form.addEventListener("submit", function(event) {
             "success"
         );
 
-    }
-
-    // UPDATE
-    else {
+    } else {
 
         students[editIndex] = student;
 
         editIndex = -1;
 
+        document.querySelector(".btn").textContent =
+            "+ Add Student";
+
         showMessage(
             "Student updated successfully! ✨",
             "success"
         );
-
     }
 
 
@@ -115,38 +113,47 @@ form.addEventListener("submit", function(event) {
 
     updateStatistics();
 
+    updateChart();
+
 });
 
 
-// ===============================
+// =========================================
 // DISPLAY STUDENTS
-// ===============================
+// =========================================
 
 function displayStudents(searchText = "") {
 
     studentList.innerHTML = "";
 
 
+    const filterElement =
+        document.getElementById("courseFilter");
+
     const filterValue =
-        document.getElementById("courseFilter")?.value || "all";
+        filterElement ? filterElement.value : "all";
 
 
-    const filteredStudents = students.filter(function(student) {
+    const filteredStudents =
+        students.filter(function(student) {
 
-        const matchesSearch =
-            student.name
-                .toLowerCase()
-                .includes(searchText.toLowerCase());
-
-
-        const matchesCourse =
-            filterValue === "all" ||
-            student.course === filterValue;
+            const matchesSearch =
+                student.name
+                    .toLowerCase()
+                    .includes(
+                        searchText.toLowerCase()
+                    );
 
 
-        return matchesSearch && matchesCourse;
+            const matchesCourse =
+                filterValue === "all" ||
+                student.course.toLowerCase() ===
+                filterValue.toLowerCase();
 
-    });
+
+            return matchesSearch && matchesCourse;
+
+        });
 
 
     filteredStudents.forEach(function(student) {
@@ -182,16 +189,12 @@ function displayStudents(searchText = "") {
                 </button>
 
             </td>
-
         `;
 
 
         studentList.appendChild(row);
 
     });
-
-
-    updateStatistics();
 
 
     const emptyMessage =
@@ -207,18 +210,22 @@ function displayStudents(searchText = "") {
 
     }
 
+
+    updateStatistics();
+
 }
 
 
-// ===============================
+// =========================================
 // DELETE STUDENT
-// ===============================
+// =========================================
 
 function deleteStudent(index) {
 
-    const confirmDelete = confirm(
-        "Are you sure you want to delete this student?"
-    );
+    const confirmDelete =
+        confirm(
+            "Are you sure you want to delete this student?"
+        );
 
 
     if (!confirmDelete) {
@@ -232,6 +239,11 @@ function deleteStudent(index) {
 
     displayStudents(searchInput.value);
 
+    updateStatistics();
+
+    updateChart();
+
+
     showMessage(
         "Student deleted successfully! 🗑️",
         "success"
@@ -240,32 +252,35 @@ function deleteStudent(index) {
 }
 
 
-// ===============================
+// =========================================
 // EDIT STUDENT
-// ===============================
+// =========================================
 
 function editStudent(index) {
 
     const student = students[index];
 
 
-    nameInput.value = student.name;
+    nameInput.value =
+        student.name;
 
-    courseInput.value = student.course;
+    courseInput.value =
+        student.course;
 
-    marksInput.value = student.marks;
+    marksInput.value =
+        student.marks;
 
 
     editIndex = index;
 
 
-    const submitButton =
+    const button =
         document.querySelector(".btn");
 
 
-    if (submitButton) {
+    if (button) {
 
-        submitButton.textContent =
+        button.textContent =
             "Update Student";
 
     }
@@ -282,9 +297,9 @@ function editStudent(index) {
 }
 
 
-// ===============================
+// =========================================
 // SEARCH
-// ===============================
+// =========================================
 
 searchInput.addEventListener(
     "input",
@@ -296,52 +311,70 @@ searchInput.addEventListener(
 );
 
 
-// ===============================
+// =========================================
 // COURSE FILTER
-// ===============================
+// =========================================
 
-document.addEventListener(
-    "change",
-    function(event) {
+const courseFilter =
+    document.getElementById("courseFilter");
 
-        if (event.target.id === "courseFilter") {
 
-            displayStudents(searchInput.value);
+if (courseFilter) {
+
+    courseFilter.addEventListener(
+        "change",
+        function() {
+
+            displayStudents(
+                searchInput.value
+            );
 
         }
+    );
 
-    }
-);
+}
 
 
-// ===============================
+// =========================================
 // STATISTICS
-// ===============================
+// =========================================
 
 function updateStatistics() {
 
-    const total = students.length;
+    const total =
+        students.length;
 
 
     const totalElement =
-        document.getElementById("totalStudents");
+        document.getElementById(
+            "totalStudents"
+        );
 
     const averageElement =
-        document.getElementById("averageMarks");
+        document.getElementById(
+            "averageMarks"
+        );
 
     const highestElement =
-        document.getElementById("highestMarks");
+        document.getElementById(
+            "highestMarks"
+        );
 
     const lowestElement =
-        document.getElementById("lowestMarks");
+        document.getElementById(
+            "lowestMarks"
+        );
 
     const passElement =
-        document.getElementById("passStudents");
+        document.getElementById(
+            "passStudents"
+        );
 
 
     if (totalElement) {
 
-        totalElement.textContent = total;
+        totalElement.textContent =
+            total;
 
     }
 
@@ -361,7 +394,6 @@ function updateStatistics() {
             passElement.textContent = "0";
 
         return;
-
     }
 
 
@@ -393,7 +425,7 @@ function updateStatistics() {
         Math.min(...marks);
 
 
-    const passStudents =
+    const passed =
         students.filter(function(student) {
 
             return student.marks >= 35;
@@ -418,21 +450,23 @@ function updateStatistics() {
 
     if (passElement)
         passElement.textContent =
-            passStudents;
+            passed;
 
 }
 
 
-// ===============================
+// =========================================
 // DARK MODE
-// ===============================
+// =========================================
 
 function toggleDarkMode() {
 
-    document.body.classList.toggle("dark-mode");
+    document.body.classList.toggle(
+        "dark-mode"
+    );
 
 
-    const darkMode =
+    const isDark =
         document.body.classList.contains(
             "dark-mode"
         );
@@ -440,25 +474,54 @@ function toggleDarkMode() {
 
     localStorage.setItem(
         "darkMode",
-        darkMode
+        isDark
     );
+
+
+    const button =
+        document.querySelector(".dark-btn");
+
+
+    if (button) {
+
+        button.textContent =
+            isDark
+                ? "☀️ Light Mode"
+                : "🌙 Dark Mode";
+
+    }
 
 }
 
 
-// Load Dark Mode
+// Load saved Dark Mode
+
 if (
     localStorage.getItem("darkMode") === "true"
 ) {
 
-    document.body.classList.add("dark-mode");
+    document.body.classList.add(
+        "dark-mode"
+    );
+
+
+    const button =
+        document.querySelector(".dark-btn");
+
+
+    if (button) {
+
+        button.textContent =
+            "☀️ Light Mode";
+
+    }
 
 }
 
 
-// ===============================
+// =========================================
 // EXPORT CSV
-// ===============================
+// =========================================
 
 function exportCSV() {
 
@@ -470,7 +533,6 @@ function exportCSV() {
         );
 
         return;
-
     }
 
 
@@ -489,7 +551,9 @@ function exportCSV() {
     const blob =
         new Blob(
             [csv],
-            { type: "text/csv;charset=utf-8;" }
+            {
+                type: "text/csv;charset=utf-8;"
+            }
         );
 
 
@@ -507,7 +571,11 @@ function exportCSV() {
         "student-records.csv";
 
 
+    document.body.appendChild(link);
+
     link.click();
+
+    document.body.removeChild(link);
 
 
     URL.revokeObjectURL(url);
@@ -521,11 +589,125 @@ function exportCSV() {
 }
 
 
-// ===============================
-// NOTIFICATION MESSAGE
-// ===============================
+// =========================================
+// MARKS CHART
+// =========================================
 
-function showMessage(message, type) {
+function updateChart() {
+
+    const canvas =
+        document.getElementById(
+            "marksChart"
+        );
+
+
+    if (!canvas) {
+        return;
+    }
+
+
+    if (typeof Chart === "undefined") {
+
+        console.log(
+            "Chart.js is not loaded."
+        );
+
+        return;
+    }
+
+
+    const labels =
+        students.map(function(student) {
+
+            return student.name;
+
+        });
+
+
+    const marks =
+        students.map(function(student) {
+
+            return student.marks;
+
+        });
+
+
+    if (marksChart) {
+
+        marksChart.destroy();
+
+    }
+
+
+    marksChart =
+        new Chart(canvas, {
+
+            type: "bar",
+
+            data: {
+
+                labels: labels,
+
+                datasets: [
+
+                    {
+
+                        label:
+                            "Student Marks",
+
+                        data: marks,
+
+                        borderWidth: 1
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        max: 100
+
+                    }
+
+                },
+
+                plugins: {
+
+                    legend: {
+
+                        display: true
+
+                    }
+
+                }
+
+            }
+
+        });
+
+}
+
+
+// =========================================
+// NOTIFICATION
+// =========================================
+
+function showMessage(
+    message,
+    type
+) {
 
     let messageBox =
         document.getElementById(
@@ -548,7 +730,8 @@ function showMessage(message, type) {
     }
 
 
-    messageBox.textContent = message;
+    messageBox.textContent =
+        message;
 
     messageBox.className =
         "message " + type;
@@ -564,10 +747,12 @@ function showMessage(message, type) {
 }
 
 
-// ===============================
+// =========================================
 // INITIAL LOAD
-// ===============================
+// =========================================
 
 displayStudents();
 
 updateStatistics();
+
+updateChart();
